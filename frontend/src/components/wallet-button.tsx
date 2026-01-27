@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { Wallet } from "lucide-react"
 import { Button } from "./ui/button"

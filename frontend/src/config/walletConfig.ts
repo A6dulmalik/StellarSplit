@@ -182,13 +182,14 @@ export async function getWalletPublicKey(): Promise<string> {
   return response.address
 }
 
-export async function signWithFreighter(txXdr: string): Promise<string> {
+export async function signWithFreighter(txXdr: string, networkPassphrase?: string): Promise<string> {
   if (!(await isFreighterInstalled())) {
     throw new Error("Freighter not installed")
   }
 
   const response = await freighterSignTransaction(txXdr, {
-    networkPassphrase: SOROBAN_NETWORK_PASSPHRASE,
+    // Default to the Soroban testnet passphrase, but allow callers to override
+    networkPassphrase: networkPassphrase ?? SOROBAN_NETWORK_PASSPHRASE,
   })
 
   if (response.error) {

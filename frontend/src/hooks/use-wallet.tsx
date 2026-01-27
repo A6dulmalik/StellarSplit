@@ -71,10 +71,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const freighterCheckAttempts = React.useRef(0)
 
   const isOnAllowedNetwork = React.useMemo(() => {
-    if (!walletNetworkPassphrase) {
-      return true
-    }
-    return walletNetworkPassphrase === SOROBAN_NETWORK_PASSPHRASE
+    // Treat any known Freighter network as "allowed" so we support both
+    // public and testnet passphrases instead of hard-coding Soroban only.
+    return !!walletNetworkPassphrase
   }, [walletNetworkPassphrase])
 
   const updateNetworkStatus = React.useCallback(async () => {
@@ -159,12 +158,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       if (!publicKey) {
         throw new Error('Wallet not connected')
       }
-      if (!isOnAllowedNetwork) {
-        throw new Error('Wrong network')
+      if (!walletNetworkPassphrase) {
+        throw new Error('Unknown wallet network')
       }
-      return signWithFreighter(txXdr)
+      return signWithFreighter(txXdr, walletNetworkPassphrase)
     },
-    [publicKey, isOnAllowedNetwork],
+    [publicKey, walletNetworkPassphrase],
   )
 
   React.useEffect(() => {
